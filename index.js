@@ -155,7 +155,11 @@ class GulpRollup extends Transform {
 				if (inputOptions.cache !== false)
 					rollupCache.set(inputOptions.input, bundle)
 				// generate ouput according to (each of) given outputOptions
-				return Promise.all(bundleList.map((outputOptions, i) => createBundle(bundle, outputOptions, i)))
+				return Promise.all(bundleList.map((outputOptions, i) => {
+					outputOptions.name = camelCase(path.basename(bundle.modules[0].id, path.extname(bundle.modules[0].id)));
+					outputOptions.name = outputOptions.name[0].toUpperCase() + outputOptions.name.slice(1);
+					createBundle(bundle, outputOptions, i);
+				}))
 			})
 			// pass file to gulp and end stream
 			.then(() => cb(null, file))
